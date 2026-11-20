@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tachyon: nothing we tested starts faster</title>
+<meta name="description" content="Tachyon is a text-only Android launcher, out now as a research preview. Cold start in 72 ms on our benchmark emulator. Every number on this page comes with its conditions.">
+<link rel="stylesheet" href="site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3'/%3E%3Cpath d='M4 4h8v2H9v6H7V6H4z' fill='%23fff'/%3E%3C/svg%3E">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="top" aria-label="Site">
+  <a class="wm" href="#top">Tachyon</a>
+  <div class="player" id="player" role="group" aria-label="Autoplay" hidden>
+    <span class="mono" id="plLabel">1 / 13</span>
+    <button class="btn sm" id="plPlay" type="button" aria-pressed="false">Play</button>
+    <button class="btn sm" id="plNext" type="button">Next</button>
+    <i id="plBar" aria-hidden="true"></i>
+  </div>
+  <a class="mono hide-s" href="#speed">Speed</a>
+  <a class="mono hide-s" href="#score">Scorecard</a>
+  <a class="mono hide-s" href="#product">Product</a>
+  <a class="mono hide-s" href="#roadmap">Roadmap</a>
+  <a class="mono hide-s" href="#get">Get it</a>
+  <a class="mono" href="blog.html">Blog</a>
+  <button class="btn sm" id="invert" type="button" aria-pressed="false">Invert</button>
+</nav>
+
+<main id="main">
+
+<!-- 1. HERO -->
+<header class="hero" id="top">
+  <div>
+    <p class="mono">An Android launcher made of text · research preview</p>
+    <h1>Tachyon</h1>
+    <p class="lede">Nothing we tested starts faster.<sup><a href="#fn1" id="r1">1</a></sup></p>
+    <p class="sub">Cold start in 72 ms. The next launcher on the same clean emulator: 167 ms.<sup><a href="#fn2">2</a></sup> You decide what to open, type two letters, and you can be in the app.<sup><a href="#fn6">6</a></sup> It was built on an e-ink phone, whose screen then takes 120–450 ms to show you.</p>
+    <p class="mono cue">Scroll to run the clock yourself, or press Play, top right. Arrow keys step through the chapters.</p>
+  </div>
+  <div class="hero-demo">
+    <div class="device"><div class="phone" id="heroPhone"><div class="layer" data-l="blank"></div></div></div>
+    <p class="clock" aria-hidden="true"><span id="heroMs">0</span> ms<small id="heroNote">cold start, replayed at real speed</small></p>
+    <p class="vh">Cold start: 72 milliseconds, median of 30 runs on an emulator.</p>
+    <div class="rowbtn">
+      <button class="btn sm" type="button" data-replay="1">Replay</button>
+      <button class="btn sm" type="button" data-replay="10">Replay 10× slower</button>
+    </div>
+    <p class="mono">That was a cold start. You probably missed it.</p>
+  </div>
+</header>
+
+<!-- 1b. WHAT IT'S FOR -->
+<section id="for">
+  <div class="wrap">
+    <p class="mono kicker">What it's for</p>
+    <h2 class="h2">You have to know what you want.</h2>
+    <p class="lede">Home is a clock and a few app names. No icon is there to catch your eye, so opening an app starts with deciding to.</p>
+    <p class="body">Then you type. Two letters can be enough,<sup><a href="#fn6">6</a></sup> and when only one app matches, it opens.</p>
+    <p class="body">Nothing animates, so on e-ink there is nothing to turn off. One repaint per action, then it stops drawing.</p>
+    <p class="body"><b>It is also quick. That is the part we could measure.</b></p>
+  </div>
+</section>
+
+<!-- 1c. THE VIDEO -->
+<section class="inv-sec" id="video">
+  <div class="wrap">
+    <p class="mono kicker">The 15-second version</p>
+    <h2 class="h2">The whole page, with drums.</h2>
+    <video class="vid" controls playsinline preload="none" poster="video/tachyon-poster.png" width="1920" height="1080">
+      <source src="video/tachyon-launch.mp4" type="video/mp4">
+      <a href="video/tachyon-launch.mp4">Download the video (MP4, 2 MB)</a>
+    </video>
+    <p class="mono meta">It has sound and never starts by itself · recorded on 17 November · two lines of its fine print have aged since: the current build forgives one typo, and it now runs on two phones</p>
+  </div>
+</section>
+
+<!-- 2. THE QUESTION -->
+<section class="pin q" data-stage="question" style="--len:260">
+  <div class="sticky">
+    <p class="line"><span>The</span> <span>world's</span> <span>fastest</span> <span>Android</span> <span>launcher?</span></p>
+    <p class="ans" hidden>We can't prove that.<br>We can prove this.</p>
+  </div>
+</section>
+
+<!-- 3a. THE RACE, WHOLE FIELD -->
+<section class="pin" id="speed" data-stage="race" style="--len:520">
+  <div class="sticky">
+    <div class="stagehead">
+      <div>
+        <p class="mono kicker">Cold start · whole field</p>
+        <h2 class="h3">Thirteen launchers. One starting gun. Scroll to run the clock.</h2>
+      </div>
+      <p class="tclock" aria-hidden="true"><span id="raceT">0</span> ms <small>elapsed</small></p>
+    </div>
+    <div class="ruler" aria-hidden="true"><span></span><div class="tk" id="raceRuler"></div><span></span></div>
+    <div class="lanes" id="raceLanes" role="img" aria-label="Cold start medians, animations off: Tachyon 139 ms, Kvaesitso 201.5, Pie Launcher 230.5, Olauncher 242.5, µLauncher 259.5, Fossify 301, MinimalSF 351.5, mLauncher 378, Discreet 380.5, Last Launcher 817, Lawnchair 818. KISS and Pixel Launcher have no valid cold start in this session."></div>
+    <p class="verdict" id="raceV" hidden>First of 11 with a valid cold start. 1.45× ahead of the next.<sup><a href="#fn3">3</a></sup></p>
+    <p class="mono meta">A cold start: Android has thrown the launcher out of memory and you press Home · Session <b>full-2</b> · 13 launchers · emulator, software GPU · animations off · n = 30 each · median, tick marks = 95 % CI · an older Tachyon build on a busy host</p>
+  </div>
+</section>
+
+<!-- 3b. THE RACE, CLEAN HOST -->
+<section class="pin inv-sec" data-stage="duel" style="--len:380">
+  <div class="sticky">
+    <div class="stagehead">
+      <div>
+        <p class="mono kicker">Cold start · clean host · final build · 3 launchers</p>
+        <h2 class="h3">Three launchers, quiet machine. Twice as fast as the nearest rival.<sup><a href="#fn2">2</a></sup></h2>
+      </div>
+      <p class="tclock" aria-hidden="true"><span id="duelT">0</span> ms <small>elapsed</small></p>
+    </div>
+    <div class="devs" id="duelDevs"></div>
+    <p class="verdict" id="duelV" hidden>2.3× faster than Olauncher. 3.5× faster than MinimalSF.<sup><a href="#fn2">2</a></sup></p>
+    <p class="mono meta">Session <b>goal-final</b> · 3 launchers · cold-booted emulator, idle host · animations on · n = 30 each · rivals shown as neutral placeholders, not their real screens</p>
+  </div>
+</section>
+
+<!-- 4. KEYBOARD -->
+<section class="pin" data-stage="kbd" style="--len:380">
+  <div class="sticky">
+    <div class="stagehead">
+      <div>
+        <p class="mono kicker">Keyboard ready · finger down to keyboard at rest</p>
+        <h2 class="h3">Keyboard up in 84 ms. The best rival takes 276. With animations off it's a tie.<sup><a href="#fn4">4</a></sup></h2>
+      </div>
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <button class="btn sm" id="kbdToggle" type="button" aria-pressed="true">System animations: on</button>
+        <p class="tclock" aria-hidden="true"><span id="kbdT">0</span> ms</p>
+      </div>
+    </div>
+    <div class="devs" id="kbdDevs"></div>
+    <p class="verdict" id="kbdV" hidden></p>
+    <p class="mono meta">Session <b>goal-final-kbd</b> · Tachyon, KISS, Pie Launcher · emulator, Gboard · n = 20 each · KISS was the fastest rival of the seven single-gesture launchers in session <b>changes-1</b><sup><a href="#fn4">4</a></sup></p>
+  </div>
+</section>
+
+<!-- 5. MEMORY -->
+<section class="pin inv-sec" data-stage="mem" style="--len:420">
+  <div class="sticky">
+    <div class="stagehead">
+      <div>
+        <p class="mono kicker">Idle memory · one square = 1 MB</p>
+        <h2 class="h3">14 MB at rest. The next-lightest launcher uses 2.4× more.<sup><a href="#fn5">5</a></sup></h2>
+      </div>
+    </div>
+    <div class="mem" id="memGrid" role="img" aria-label="Idle memory in megabytes: Tachyon 14.3, Pie Launcher 35.0, Olauncher 35.8, MinimalSF 38.4, mLauncher 40.9, Discreet 43.2, µLauncher 45.0, KISS 45.0, Pixel Launcher 54.2, Last Launcher 76.8, Lawnchair 78.6, Kvaesitso 96.7, Fossify 151.6."></div>
+    <p class="mono meta">Session <b>full-2</b> · 13 launchers · PSS after 300 s idle on Home · n = 3 each, so read it as a size class, not a decimal<sup><a href="#fn5">5</a></sup></p>
+  </div>
+</section>
+
+<!-- 6. SEARCH -->
+<section id="search">
+  <div class="wrap two">
+    <div>
+      <p class="mono kicker">Search</p>
+      <h2 class="h2">Two letters. Three steps. No Enter.<sup><a href="#fn6">6</a></sup></h2>
+      <p class="lede">There is no app drawer. Search is the drawer. Type part of a name, or its initials, and the best match sits right above your thumb.</p>
+      <ul class="facts">
+        <li><b>Type <code>vk</code>, get Viking Kettle.</b> Tachyon was the only launcher of 13 that launched from an acronym without Enter: 3 steps. KISS and Pie Launcher needed 4. Nine never launched it. One opened the wrong app.<sup><a href="#fn6">6</a></sup></li>
+        <li><b>Zero wrong launches in six test queries.</b> Three rivals opened something you did not ask for at least once.<sup><a href="#fn6">6</a></sup></li>
+        <li><b>It forgives one typo now, and only offers.</b> In the benchmark <code>mqrlin</code> found nothing, and Pie Launcher found Marlin Ferry. Credit where due. The preview build now offers a title one typing mistake away and waits for Enter; it never opens a near miss by itself. The scorecard keeps the loss until that is measured again.</li>
+      </ul>
+      <p class="mono meta">The demo phone runs in your browser over the benchmark's 158 made-up app names. It imitates the ranking; it is not the app's engine. Try <b>vk</b>, <b>zeni</b>, <b>orre</b>.</p>
+    </div>
+    <div>
+      <div class="device"><div class="phone" id="demoPhone"></div></div>
+      <div class="steps" aria-live="polite"><span class="chip" id="demoSteps">0 steps</span><span class="chip" id="demoState">type something</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. SCORECARD -->
+<section class="inv-sec" id="score">
+  <div class="wrap">
+    <p class="mono kicker">The scorecard</p>
+    <h2 class="h2">Where it wins. Where it ties. Where it loses.</h2>
+    <p class="lede">All of it, because a speed claim you can't check is just a mood.</p>
+    <div class="tscroll">
+    <table class="score">
+      <thead><tr><th scope="col">Metric</th><th scope="col">Tachyon</th><th scope="col">Best rival</th><th scope="col">Result</th><th scope="col">Measured how</th></tr></thead>
+      <tbody>
+        <tr class="win reveal"><td>Cold start, whole field</td><td class="num">139 ms</td><td class="num">Kvaesitso 201.5 ms</td><td class="st">Win · 1.45×</td><td>full-2, 11 valid of 13, 0x, n=30<small>older build, busy host</small></td></tr>
+        <tr class="win reveal"><td>Cold start, clean host</td><td class="num">72 ms</td><td class="num">Olauncher 167 ms</td><td class="st">Win · 2.3×</td><td>goal-final, 3 launchers, 1x, n=30</td></tr>
+        <tr class="win reveal"><td>Keyboard ready, animations on</td><td class="num">83.5 ms</td><td class="num">KISS 276.3 ms</td><td class="st">Win · 3.3×</td><td>goal-final-kbd, 3 launchers, 1x, n=20</td></tr>
+        <tr class="win reveal"><td>Idle memory</td><td class="num">14.3 MB</td><td class="num">Pie 35.0 MB</td><td class="st">Win · 2.4×</td><td>full-2, 13 launchers, n=3</td></tr>
+        <tr class="win reveal"><td>Wrong apps launched from search</td><td class="num">0</td><td class="num">3 rivals: wrong app 20 of 20 times on a query</td><td class="st">Win</td><td>full-2 + changes-1, 6 queries</td></tr>
+        <tr class="reveal"><td>Keyboard ready, animations off</td><td class="num">79.3 ms</td><td class="num">KISS 77.2 ms</td><td class="st">Tie</td><td>goal-final-kbd, 0x, n=20</td></tr>
+        <tr class="reveal"><td>HOME button, first frame</td><td class="num">19.6 ms</td><td class="num">Olauncher 20.4 ms</td><td class="st">Tie</td><td>goal-final, 1x, n=30<small>n=200 run: not separable within about ±3 ms</small></td></tr>
+        <tr class="reveal"><td>HOME button, settled</td><td class="num">263.6 ms</td><td class="num">Olauncher 264.2 ms</td><td class="st">Tie</td><td>goal-final, 1x, n=30</td></tr>
+        <tr class="reveal"><td>Warm start</td><td class="num">24 ms</td><td class="num">MinimalSF 22 ms</td><td class="st">Tie</td><td>goal-final, 1x, n=30</td></tr>
+        <tr class="reveal"><td>Hot start</td><td class="num">17 ms</td><td class="num">Olauncher 15 ms</td><td class="st">Behind · 2 ms</td><td>goal-final, 1x, n=30<small>the 95 % interval of the difference excludes zero</small></td></tr>
+        <tr class="reveal"><td>APK size</td><td class="num">399 KB</td><td class="num">Pie 337 KB</td><td class="st">Behind</td><td>file size of the preview build</td></tr>
+        <tr class="reveal"><td>One-typo query</td><td class="num">not found</td><td class="num">Pie finds it</td><td class="st">Behind</td><td>changes-1, 20 of 20<small>the preview build offers near misses; not measured again</small></td></tr>
+        <tr class="reveal"><td>On a real phone</td><td class="num">measuring</td><td class="num">–</td><td class="st">Unknown</td><td>the launcher keeps a perf log on the device</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="mono meta">0x / 1x = system animation scale off / on. Cold = the app was not in memory. Warm = its process was alive but the screen was rebuilt. Hot = it was already running. Medians. All on one Android 16 emulator (x86_64, 4 vCPU, software GPU). Tachyon was measured under its working name, Palma Launcher 0.1.0.</p>
+  </div>
+</section>
+
+<!-- 8. WHY -->
+<section id="why">
+  <div class="wrap">
+    <p class="mono kicker">Why it's fast</p>
+    <h2 class="h2">0.7 ms of a hot start is ours. The rest is Android.</h2>
+    <p class="lede">A hot start takes about 17 ms. Half of that is waiting for the display to tick. We traced where every millisecond goes, then stopped doing everything that wasn't needed. You will not feel 0.7 ms. We counted it anyway.</p>
+    <div class="phase" role="img" aria-label="Where a hot start goes, in milliseconds: Tachyon's own code 0.7, waiting for the display tick 8.4, system window and buffer work about 7.4.">
+      <i class="me" style="--f:.3"></i><i class="tick" style="--f:8.4"></i><i style="--f:1.3"></i><i style="--f:1.35"></i><i style="--f:1.96"></i><i class="me" style="--f:.4"></i><i style="--f:.47"></i><i style="--f:.74"></i><i style="--f:1.6"></i>
+    </div>
+    <div class="legend mono"><span class="me">Tachyon's code · 0.7 ms</span><span class="tick">Waiting for the display tick · 8.4 ms</span><span>Android: window, buffers, bookkeeping · about 7.4 ms</span></div>
+    <div class="cards">
+      <div class="card"><h3 class="h3">One View</h3><p>Every screen is drawn by a single custom View. No Compose, no AppCompat, no Material.</p></div>
+      <div class="card"><h3 class="h3">Zero libraries in search</h3><p>The search core is plain Kotlin with no dependency besides the standard library.</p></div>
+      <div class="card"><h3 class="h3">A CPU window</h3><p>Home is drawn straight into a buffer. No GPU context to set up before the first frame.</p></div>
+      <div class="card"><h3 class="h3">One repaint</h3><p>A key, a selection move or HOME costs one frame. Launching an app costs none.</p></div>
+      <div class="card"><h3 class="h3">Kept only if measured</h3><p>One change at a time, benchmarked, reverted if not faster. A 16-bit window and a retained frame both lost, so both went.</p></div>
+      <div class="card"><h3 class="h3">120 budgets</h3><p>The build fails when any of 120 performance budgets is exceeded.</p></div>
+    </div>
+    <p class="mono meta">Phase medians of 20 traced HOME returns, session <b>home-tail-e0h</b>, emulator.</p>
+  </div>
+</section>
+
+<!-- 9. FINE PRINT -->
+<section class="inv-sec" id="fine">
+  <div class="wrap">
+    <p class="mono kicker">The fine print, in large print</p>
+    <h2 class="h2">This is an emulator. Its GPU is software. That helps us.</h2>
+    <p class="lede">Most of the cold-start lead comes from drawing on the CPU, on a machine where everyone else's GPU set-up is unusually slow. Here is the same Tachyon APK drawn three ways.</p>
+    <div class="bars" data-chart="renderer" data-max="400" data-unit="ms" data-me="palma"></div>
+    <p class="body">Give Tachyon a hardware window and it still starts 13.5 ms ahead of Olauncher. Make it draw everything through the software GPU and it is 215 ms behind. On a phone with a real GPU the gap will be smaller, by an amount this benchmark cannot tell.<sup><a href="#fn7">7</a></sup></p>
+    <div class="slot">
+      <p class="mono">Real device</p>
+      <h3 class="h3" style="margin-top:6px">Measuring.</h3>
+      <p class="body">Tachyon was built on and for a Boox Palma 2 Pro, an e-ink phone, and that is the only place it runs every day. Emulator milliseconds are not phone milliseconds: on e-ink the panel's own refresh, 120–450 ms, comes on top of everything. It now keeps a performance log on the device. When there are enough rows, the numbers land here: Tachyon only, daily use, never mixed into an emulator chart.</p>
+      <p class="body">The first rows, from one day on the phone (17 November, animations off): a search query takes 0.5 ms (n = 15), a keystroke to its redraw 27.5 ms (n = 12), HOME to the next frame 49.5 ms (n = 5), process start to first draw 157 ms (n = 3). These are the launcher's own timings, before the panel refreshes. Far too few to call anything.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 10. PRODUCT -->
+<section class="pin film" id="product" data-stage="film" style="--len:440">
+  <div class="sticky">
+    <div class="stagehead">
+      <div>
+        <p class="mono kicker">The product</p>
+        <h2 class="h3">Black on white, or white on black. Text only. Made for e-ink.</h2>
+      </div>
+    </div>
+    <div class="strip" id="strip">
+      <figure><div class="device"><div class="phone" data-screen="home"></div></div><figcaption><b>Home</b><span>A clock and your pins: apps, or one action inside an app. Nothing to look at, on purpose.</span></figcaption></figure>
+      <figure><div class="device"><div class="phone" data-screen="search"></div></div><figcaption><b>Search</b><span>Apps, shortcuts, settings and commands. Best match at the bottom, by your thumb.</span></figcaption></figure>
+      <figure><div class="device"><div class="phone" data-screen="calc"></div></div><figcaption><b>Calculator</b><span>Type the sum. Enter copies the answer.</span></figcaption></figure>
+      <figure><div class="device"><div class="phone" data-screen="actions"></div></div><figcaption><b>Actions</b><span>Hold any result: shortcuts, pin to Home, hide, uninstall.</span></figcaption></figure>
+      <figure><div class="device"><div class="phone" data-screen="commands"></div></div><figcaption><b>Commands</b><span>Type &gt; to control the device: front light, Wi‑Fi, screen refresh.</span></figcaption></figure>
+      <figure><div class="device"><div class="phone" data-screen="modes"></div></div><figcaption><b>Modes</b><span>One tap changes pins, gestures and settings. Evening reading, for instance.</span></figcaption></figure>
+      <figure><div class="device"><div class="phone" data-screen="dashboard"></div></div><figcaption><b>Dashboard</b><span>A countdown, three numbers, one thing to remember.</span></figcaption></figure>
+      <figure><div class="device"><div class="phone" data-screen="lock"></div></div><figcaption><b>Lock screen</b><span>The dashboard, shown while the phone sleeps.</span></figcaption></figure>
+    </div>
+    <p class="mono meta" style="padding:0 var(--gut)">Screens are drawn in your browser from the app's design files, with sample content.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="mono kicker">In the wild, as imagined</p>
+    <h2 class="h2">A phone that waits for you.</h2>
+    <div class="life">
+      <figure><img src="img/life-01.jpg" alt="An e-ink phone showing the Tachyon home screen on a café table next to a coffee cup" loading="lazy"><div class="device"><div class="phone" data-screen="home"></div></div><figcaption class="mono">Morning · image slot 01</figcaption></figure>
+      <figure><img src="img/life-02.jpg" alt="A hand holding an e-ink phone on a tram, thumb on the Tachyon search bar" loading="lazy"><div class="device"><div class="phone" data-screen="search"></div></div><figcaption class="mono">Commute · image slot 02</figcaption></figure>
+      <figure><img src="img/life-03.jpg" alt="An e-ink phone asleep on a bedside table showing the Tachyon lock-screen dashboard" loading="lazy"><div class="device"><div class="phone" data-screen="lock"></div></div><figcaption class="mono">Night · image slot 03</figcaption></figure>
+    </div>
+    <p class="mono meta">These three photos are generated. The screens in them are real; the café, the tram and the bedside table are not.</p>
+  </div>
+</section>
+
+<!-- 10b. NEW IN THE PREVIEW -->
+<section class="inv-sec" id="new">
+  <div class="wrap">
+    <p class="mono kicker">New in the research preview</p>
+    <h2 class="h2">Someone else installed it.</h2>
+    <p class="lede">The first person outside the project put it on a phone with a camera hole in the screen, and sent three requests the same morning. All three are in this build.</p>
+    <div class="cards">
+      <div class="card"><h3 class="h3">Dark theme</h3><p>White on true black, or follow the phone's setting. Type <code>&gt; theme</code>. The start-up screen changes with it, so nothing flashes white.</p></div>
+      <div class="card"><h3 class="h3">Camera cutouts</h3><p>Text now starts below a notch or a punch-hole camera. The phone it was built on has neither, so nobody had noticed.</p></div>
+      <div class="card"><h3 class="h3">Pin an action, not just an app</h3><p>"Firefox: New tab", one chat, one channel. Hold a search result and choose Pin to home. Android keeps a pinned shortcut alive after the app stops listing it.</p></div>
+    </div>
+    <p class="mono meta">Checked on the benchmark emulator with a simulated cutout, and in daily use on two phones. This build has not been through the full benchmark; the numbers above belong to the build before it.</p>
+  </div>
+</section>
+
+<!-- 10c. ROADMAP -->
+<section id="roadmap">
+  <div class="wrap">
+    <p class="mono kicker">Roadmap</p>
+    <h2 class="h2">Open source, and a real release. Soon.</h2>
+    <p class="lede">Two promises: the code will be open, and so will the benchmark that produced every number on this page. The rest is a plan, in the order we mean to do it.</p>
+    <ol class="road">
+      <li><p class="mono">Now</p><div><h3 class="h3">Research preview</h3><p>The build on this page. It works every day on two phones, and it still assumes it is on the author's.</p></div></li>
+      <li><p class="mono">Next</p><div><h3 class="h3">Ready for a stranger's phone</h3><p>A first run that does not start with someone else's pinned apps. A permanent package name. Android versions older than 15. Numbers from real phones, next to the emulator's.</p></div></li>
+      <li><p class="mono">Then</p><div><h3 class="h3">Open source and a public beta</h3><p>The launcher's code and the benchmark harness in public, with builds you can follow from the repository. App stores after that.</p></div></li>
+      <li><p class="mono">After</p><div><h3 class="h3">A config you can hack</h3><p>Everything already lives in one JSON file: pins, gestures, keywords, modes and your own actions. Next come a published schema, importing a config from a link, and packs of ready-made actions to share. No plug-in may ever cost a frame.</p></div></li>
+      <li><p class="mono">Also</p><div><h3 class="h3">Tachyon for iPhone</h3><p>iOS does not let an app be the home screen. So the iPhone version is the search alone: one press of the Action Button, two letters, and you are in the app. A first build exists. The video is a design preview.</p></div></li>
+    </ol>
+    <video class="vid tall" controls playsinline preload="none" poster="video/tachyon-ios-poster.jpg" width="1080" height="1920">
+      <source src="video/tachyon-ios-features.mp4" type="video/mp4">
+      <a href="video/tachyon-ios-features.mp4">Download the iPhone design preview (MP4, 2 MB)</a>
+    </video>
+    <p class="mono meta">iPhone design preview · 34 seconds, with sound · drawn from the design, not filmed on a phone · no dates on this roadmap, on purpose</p>
+  </div>
+</section>
+
+</main>
+
+<!-- 11. FOOTER -->
+<footer class="foot inv-sec sec" id="get">
+  <div class="wrap">
+    <p class="mono kicker">Get it</p>
+    <h2 class="h2">Tachyon, research preview</h2>
+    <p class="lede">A 399 KB APK for Android 15 or later. It is free. It is debug-signed and in no store, so your phone will warn you before installing it. To go back, pick your old home app in Settings. No account, no ads, no subscription, no tracking; it asks for network access for one thing, webhooks you set up yourself. It runs on two phones so far.</p>
+    <p class="body"><b>What "research preview" means.</b> It was built for one person and one phone, and it shows. Home starts with the author's seven pinned apps; hold one to unpin it. The package name will change before the real release, so you will install it once more then and set it up again. Things will break. Tell us which.</p>
+    <p class="body"><b>What comes after.</b> It will be open source, and properly released. <a href="#roadmap">The roadmap</a> has the order.</p>
+    <p class="body"><b>On a Boox.</b> Switch off "Freeze new apps" in the Boox settings before installing, or Boox disables it on arrival. After that ours has stayed the home app. Notes and the reader are not separate apps on a Boox, so they do not appear in search; the stock Boox home does.</p>
+    <div class="cta">
+      <a class="btn solid" href="download/tachyon-research-preview.apk" download>Download the research preview · 399 KB</a>
+      <a class="btn" href="blog.html">Read how it was built</a>
+    </div>
+    <p class="joke">The effort that went into this page is the joke. The numbers aren't.</p>
+    <p class="mono pageperf" id="pagePerf"></p>
+
+    <ol class="fn">
+      <li id="fn1">Cold start, first in every session we ran: against 10 rivals with a valid cold start in <code>full-2</code>, and against Olauncher and MinimalSF in <code>renderer-starts</code> and <code>goal-final</code>. 13 launchers were tested; Pixel Launcher could not be cold-started on the image and KISS's cell was not reportable (19 of 30 valid). <a href="#r1">Back</a></li>
+      <li id="fn2">Session <code>goal-final</code>, animations on (1x), median of n = 30, cold-booted emulator on an idle host: Tachyon 72.0 ms [95 % CI 71.0–74.5], Olauncher 167.0 [164.5–173.5], MinimalSF 254.0 [246.5–267.0]. With animations off: 77.5 / 161.5 / 255.5. Only these three launchers were in that session.</li>
+      <li id="fn3">Session <code>full-2</code>, animations off (0x), n = 30: Tachyon 139.0 ms [133.0–145.5], Kvaesitso 201.5 [195.0–227.0], Pie Launcher 230.5, Olauncher 242.5. An older Tachyon build; host load average had a median of 7.2.</li>
+      <li id="fn4">Session <code>goal-final-kbd</code>, n = 20. Animations on: Tachyon 83.5 ms [78.6–86.7], KISS 276.3 [273.0–280.4], Pie Launcher 325.4. Animations off: Tachyon 79.3 [76.0–81.0], KISS 77.2 [75.1–80.2], a tie. Gboard on the emulator. The instant keyboard is an LCD feature; on e-ink the launcher leaves the keyboard alone.</li>
+      <li id="fn5">Session <code>full-2</code>: PSS from <code>dumpsys meminfo</code> after 300 s idle on Home, median of 3. Tachyon 14,326 kB, Pie Launcher 34,991 kB, Fossify 151,618 kB (its three samples ranged from 110 to 199 MB).</li>
+      <li id="fn6">Sessions <code>full-2</code> (queries q1–q3, n = 10–20 per scale) and <code>changes-1</code> (q1, q4–q6, n = 20 per scale), 13 launchers, 158 generated stub apps. Wrong launches: MinimalSF on <code>orre</code>, KISS on <code>mqrlin</code>, Kvaesitso on <code>vk</code> and <code>mqrlin</code>, each 20 of 20; for KISS and Kvaesitso it was the scripted Enter running a web-search row.</li>
+      <li id="fn7">Session <code>renderer-starts</code>, 0x, n = 30, renderer verified on every row: CPU window 72.0 ms, hardware window with a software layer 140.0, full GPU drawing 368.5, Olauncher 153.5.</li>
+      <li>Method: every launcher was installed from its published APK (hash and signer checked), set as the real HOME app, warmed up with the same journeys and compiled <code>speed-profile</code>. Timing comes from system trace points and <code>am start -W</code>; rounds are interleaved; nothing is dropped. Tachyon's provenance is the weakest in the table: a local debug-signed build. The download is a later build than the ones in the charts (version 0.1.0, built 20 November 2026). The long version is in the <a href="blog.html">blog post</a>.</li>
+      <li>Other launchers are named to make the numbers checkable. They are good software; several do far more than Tachyon does. Versions tested are listed in the blog post.</li>
+      <li>Fonts: Atkinson Hyperlegible and IBM Plex Mono, SIL Open Font License (<a href="fonts/LICENSE-atkinson-hyperlegible.txt">licence</a>, <a href="fonts/LICENSE-ibm-plex-mono.txt">licence</a>).</li>
+    </ol>
+  </div>
+</footer>
+
+<noscript><p style="padding:24px">The charts on this page are drawn by a small script. The scorecard and footnotes above hold every number without it.</p></noscript>
+<script src="data.js"></script>
+<script src="screens.js"></script>
+<script src="site.js"></script>
+</body>
+</html>

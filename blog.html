@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How fast is Tachyon? We built a benchmark to find out</title>
+<meta name="description" content="How Tachyon, a text-only Android launcher, was built and measured against twelve other launchers, including the parts where it ties and loses.">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<nav class="top" aria-label="Site">
+  <a class="wm" href="index.html">Tachyon</a>
+  <a class="mono hide-s" href="index.html#speed">Speed</a>
+  <a class="mono hide-s" href="index.html#score">Scorecard</a>
+  <a class="mono hide-s" href="index.html#roadmap">Roadmap</a>
+  <a class="mono" href="blog.html" aria-current="page">Blog</a>
+  <button class="btn sm" id="invert" type="button" aria-pressed="false">Invert</button>
+</nav>
+
+<main id="main">
+<article class="art">
+  <p class="mono">Blog · 17 November 2026 · benchmark notes</p>
+  <h1>How fast is Tachyon?</h1>
+  <p class="standfirst">We built a text-only home screen for an e-ink phone, then built a benchmark to find out whether it is actually fast. It cold-starts first and uses the least memory. On the HOME button, the thing you press a hundred times a day, it ties.</p>
+  <p class="mono" style="margin-top:20px">Written by AI agents (Claude Opus 5.5 and Claude Fable 5.2) with the launcher's owner. Every number is from an emulator. During the work the launcher was called Palma Launcher; result files use that name.</p>
+
+  <p class="mono" style="margin-top:20px">Update, 20 November 2026: the download is now a research preview, a later build than the ones measured here. It offers one-typo near misses, has a dark theme, keeps clear of camera cutouts and can pin an action inside an app. It is 399 KB. None of that has been through the benchmark again, so every number below stays as it was measured. Open source is on the <a href="index.html#roadmap">roadmap</a>.</p>
+
+  <h2>The short version</h2>
+  <ul class="verdicts">
+    <li><span class="st">Win</span><span><b>Cold start.</b> 139 ms against 201.5 ms for the next of the eleven launchers with a valid cold start, out of thirteen tested, with animations off and an older Tachyon build. On a clean host with the final build, three launchers and animations on: 72 ms against 167 ms for Olauncher. Most of that lead is our software renderer on an emulator whose GPU is also software.</span></li>
+    <li><span class="st">Win</span><span><b>Keyboard ready, animations on.</b> 83.5 ms from finger-down, against 276.3 ms for KISS. With animations off it is a tie: 79.3 against 77.2.</span></li>
+    <li><span class="st">Win</span><span><b>Idle memory.</b> 14.3 MB against 35.0 MB for the next-lightest, from three samples each.</span></li>
+    <li><span class="st">Tie</span><span><b>HOME return, warm start, HOME settle.</b> On HOME return, two hundred presses per launcher could not separate Tachyon from the fastest within about ±3 ms. Warm start (the process is alive, the screen is rebuilt) and HOME settle are ties at thirty runs each.</span></li>
+    <li><span class="st">Behind</span><span><b>Hot start</b> by about 2 ms to Olauncher, with animations on. <b>APK size</b> to Pie Launcher. <b>Typos:</b> one wrong letter and Tachyon finds nothing.</span></li>
+    <li><span class="st">Open</span><span><b>The real phone.</b> Nothing here is a phone number. The launcher now logs its own timings on the device.</span></li>
+  </ul>
+
+  <h2>What we built</h2>
+  <p>The Boox Palma 2 Pro is a phone-shaped e-ink device. Its screen takes 120 to 450 ms to physically change, it ghosts, and it hates animation. A normal Android launcher, with a wallpaper, icons, a drawer that slides and a search page that fades, spends most of its effort on things this panel shows badly.</p>
+  <p>The owner's daily launcher was Olauncher, which is already minimal. The brief for the new one was short: fast and fun, and faster than Olauncher.</p>
+  <figure>
+    <div class="shots">
+      <div class="device"><div class="phone" data-screen="home"></div></div>
+      <div class="device"><div class="phone" data-screen="search"></div></div>
+      <div class="device"><div class="phone" data-screen="calc"></div></div>
+      <div class="device"><div class="phone" data-screen="actions"></div></div>
+    </div>
+    <figcaption>Home, search, the calculator and the actions sheet, drawn from the design files with sample content. Not photos of the phone.</figcaption>
+  </figure>
+  <p>Tachyon is a Raycast-style launcher. Home is a clock and seven pinned names. Everything else is one search bar: apps, app shortcuts, system settings, commands, a calculator and your own actions, ranked exact, prefix, word start, acronym, substring, then fuzzy (your letters in order, with gaps), and after that by how recently and how often you use them. Whatever you pick for a query comes first the next time you type exactly that query.</p>
+  <p>The rules that make it an e-ink launcher are short:</p>
+  <ul>
+    <li><b>Pure black on white.</b> No ripple, shadow or transparency.</li>
+    <li><b>Zero animation.</b> Every state change is a single finished frame.</li>
+    <li><b>One repaint per interaction.</b> A keystroke, a selection move or a HOME press may cost one panel update. Launching an app costs none.</li>
+    <li><b>Plain custom Views.</b> No Compose, AppCompat or Material, no coroutines, no JSON library; the config file is read by a small parser of our own. The pure-Kotlin core depends on nothing but the Kotlin standard library.</li>
+    <li><b>Actions are data.</b> A JSON file defines pins, gestures, hardware keys, keyword actions and webhooks.</li>
+  </ul>
+
+  <h2>How we built it</h2>
+  <p>The launcher, the benchmark harness and this post were written by AI agents run as multi-agent workflows, with the owner deciding what to build and approving each plan. The starting point was a design handoff: seven screens as HTML, a token file and a list of open questions about the device.</p>
+  <p>The loop was the same every time: research, implement, hand the result to a different agent with no shared context for review, turn each finding into a change and a test, then measure and keep the change only if the numbers say so.</p>
+  <p>The review step is where the agents' mistakes showed. One research pass recommended a faster auto-launch rule with "0 wrong launches"; the reviewer re-ran the simulation with acronym typing and found it launching the wrong app, so the rule was replaced before any code was written. Our own first write-up said Tachyon was first to have the keyboard ready; the review pointed out that the clock started at the end of the swipe, after Tachyon had already asked for the keyboard. Timed from finger-down, it was third of seven with animations off and second with them on. That one stung, and it set the work list for the next two days.</p>
+
+  <h2>The benchmark</h2>
+  <p>"Fast" is the most common claim in launcher descriptions, and we could not find a reproducible, published comparison behind any of them. So before claiming anything we wrote one: a harness where a single command runs the whole benchmark against one device and writes every attempt as a raw row.</p>
+  <ul>
+    <li><b>Thirteen launchers.</b> Eleven rivals are official APKs from F-Droid or the project's GitHub release; the harness refuses an APK whose hash or signer does not match the published one. The Pixel Launcher is the copy in the emulator's system image. Tachyon is our own local build.</li>
+    <li><b>158 code-free stub apps</b> from a fixed seed (153 in the earliest session, full-2), so every launcher indexes the same list and every search target starts in the same trivial time.</li>
+    <li><b>Real HOME.</b> Each launcher is set as the default home app, scripted through onboarding, warmed up with the same journeys and compiled the same way.</li>
+    <li><b>System-side timing.</b> Trace points in the system and <code>am start -W</code>, Android's own start timer. Nothing depends on a launcher being instrumented, ours included.</li>
+    <li><b>Interleaved rounds</b>, rotated order, so drift hits everyone equally. Each timing was taken with Android's system animations off and again with them on. Bootstrap 95 % intervals. Failed and invalid rows stay in the file with a reason.</li>
+  </ul>
+  <p class="call">The device is an Android 16 emulator: x86_64, 4 vCPU, 3 GB RAM, a software GPU, 824 × 1648 pixels. Not a phone, not e-ink. Absolute numbers are not phone numbers; the comparisons between launchers are the point. On the Palma, the panel's own 120 to 450 ms comes on top of every timing.</p>
+
+  <h2>Cold start: a real lead, mostly from the renderer</h2>
+  <figure>
+    <div class="bars" data-chart="coldField" data-max="900" data-unit="ms"></div>
+    <figcaption>Cold start to first frame, animations off. Median of 30. Session full-2: thirteen launchers, an older Tachyon build, a busy host. Pixel Launcher cannot be cold-started on this image; KISS had only 19 valid starts of 30.</figcaption>
+  </figure>
+  <p>A cold start is the launcher starting from nothing: the harness kills its process first. Tachyon takes 139 ms. The next fastest is Kvaesitso at 201.5 ms, then Pie Launcher at 230.5 and Olauncher at 242.5. Last Launcher and Lawnchair take about 820 ms.</p>
+  <p>Then we asked how much of that is the renderer. Tachyon draws Home in a plain CPU window: no render thread, no GPU context. On an emulator with a software GPU, that is a large advantage. So we ran the same APK three ways on a freshly booted emulator, with the renderer checked on every row.</p>
+  <figure>
+    <div class="bars" data-chart="renderer" data-max="400" data-unit="ms"></div>
+    <figcaption>Session renderer-starts, animations off, n = 30 per row, clean host, one build before the final one.</figcaption>
+  </figure>
+  <p>As built, with its software window, Tachyon takes 72 ms in this session against 153.5 ms for Olauncher, a lead of 81.5 ms. With a hardware window that still draws on the CPU, Tachyon takes 140 ms: 68 ms of the lead is gone and 13.5 ms remains. With full GPU drawing it takes 368.5 ms, 215 ms behind Olauncher. What we can claim: on this emulator Tachyon cold-starts fastest, most of the reason is the software window, and a lead of about 14 ms survives a hardware window. What we cannot claim: that it cold-starts fastest on a phone. A real GPU makes the hardware paths cheaper by an amount this benchmark cannot tell us.</p>
+  <figure>
+    <div class="bars" data-chart="coldClean" data-max="300" data-unit="ms"></div>
+    <figcaption>The final build on a clean host, animations on. Session goal-final, n = 30, three launchers.</figcaption>
+  </figure>
+
+  <h2>HOME: the one we wanted, and a tie</h2>
+  <p>HOME is the most frequent thing a launcher does, so this is the metric we most wanted to win. We did not. With 200 presses per launcher against four rivals (MinimalSF, Pie Launcher, the Pixel Launcher and Olauncher), the medians of all five lie within about 3 ms of each other, between 20.7 and 23.8 ms, and no ordering holds from round to round. A tie here means the benchmark cannot resolve a difference that small, not that there is none. In that session, on a busy host, Tachyon also had the slowest tail of the five: with animations off, one press in ten took 53.7 ms or more, against 28.4 to 34.2 ms for the others. On a freshly booted emulator the tail did not show: 25.4 ms, against 27.7 and 28.7 ms for the two rivals in that session.</p>
+  <p>The reason is in the traces of a hot start, where the launcher is still in memory and only has to come back to the front. Of its roughly 17 ms, Tachyon's own code is about 0.7 ms. Half is waiting for the next display tick. The rest is Android creating a surface and a buffer. A hot resume of an already-drawn activity is not something launcher code can make much faster.</p>
+  <p>One HOME number was a clear loss at first: with system animations on, the transition took 531 ms to settle against 264 ms for Olauncher, because Android picks a longer animation for opaque home windows. That one we fixed. It now settles in 263.6 ms against Olauncher's 264.2, a tie.</p>
+  <figure>
+    <div class="bars" data-chart="homeFirst" data-max="30" data-unit="ms"></div>
+    <figcaption>HOME key to first frame, animations on. Session goal-final, n = 30. All three intervals overlap.</figcaption>
+  </figure>
+
+  <h2>The keyboard: from third place to first</h2>
+  <p>After the review that moved us from "first" to "third", three changes went in, one at a time, each kept only after its own benchmark session. A fast flick now opens search before the swipe ends. On an LCD the keyboard appears at rest instead of sliding in. And the launcher tells the keyboard what text is in the field up front, so the keyboard draws one display tick sooner.</p>
+  <figure>
+    <div class="bars" data-chart="kbdOn" data-max="360" data-unit="ms"></div>
+    <figcaption>Finger-down to keyboard at rest, animations on. Session goal-final-kbd, n = 20, three launchers.</figcaption>
+  </figure>
+  <p>With animations on, Tachyon has the keyboard ready in 83.5 ms against 276.3 ms for KISS, which was the fastest rival when seven launchers were timed on this. With animations off there is no slide to skip and it is a tie, 79.3 against 77.2 ms. One experiment along the way was faster still and was thrown out: it made the launcher draw twice per search open, and one repaint per interaction is a rule.</p>
+
+  <h2>Memory</h2>
+  <figure>
+    <div class="bars" data-chart="memory" data-div="1000" data-max="170" data-unit="MB"></div>
+    <figcaption>Idle memory (PSS) after 300 s on Home. Median of 3 samples. Session full-2, an older Tachyon build.</figcaption>
+  </figure>
+  <p>Tachyon idles at 14.3 MB. Pie Launcher and Olauncher are at about 35 MB, Fossify at 152 MB. The difference is in the native heap, 7.3 MB against 20 to 37 MB for the others, which is what you would expect from an app that loads no UI toolkit, no icons and two fonts. Three samples each is thin; read it as a size class.</p>
+
+  <h2>Search: fewer wrong turns, not fewer keys</h2>
+  <p>Search was scripted with six queries against the stub apps; four are below. We count steps (the gesture that opens search, then every key and tap) and whether the launcher finds the app at all.</p>
+  <table>
+    <thead><tr><th>Query</th><th>What it tests</th><th>Tachyon</th><th>The field</th></tr></thead>
+    <tbody>
+      <tr><td><code>zeni</code></td><td>unique first letter</td><td>5 steps</td><td>MinimalSF 1; Olauncher, µLauncher, Last Launcher 4</td></tr>
+      <tr><td><code>orre</code></td><td>match on the second word</td><td>6 steps</td><td>four never launch it; one launches the wrong app</td></tr>
+      <tr><td><code>vk</code></td><td>acronym</td><td>3 steps</td><td>KISS, Pie 4; nine never launch it; one launches the wrong app</td></tr>
+      <tr><td><code>mqrlin</code></td><td>one typo</td><td>not found</td><td>only Pie finds it</td></tr>
+    </tbody>
+  </table>
+  <p>Tachyon needs one more key than Olauncher, µLauncher and Last Launcher on a simple query. That comes from a deliberately cautious rule: it launches while you type only when the query matches exactly one item. A wrong launch on e-ink costs an app start, a HOME press and a retry, so we started strict. In six queries Tachyon never opened the wrong app.</p>
+
+  <h2>Where we lose</h2>
+  <ul>
+    <li><b>Keys.</b> One more step than three rivals on the simplest query, and four more than MinimalSF. A key on an e-ink keyboard costs far more than any millisecond on this page.</li>
+    <li><b>Hot start.</b> About 2 ms behind Olauncher with animations on. Warm start is a tie on the final build; one build earlier, Olauncher and MinimalSF were 2.5 to 5 ms ahead.</li>
+    <li><b>Typos.</b> One wrong letter and Tachyon finds nothing. Pie does.</li>
+    <li><b>Size.</b> 394 KB. Pie Launcher is 337 KB.</li>
+    <li><b>Provenance.</b> Eleven rivals are official, signer-verified APKs and the Pixel Launcher comes from the system image. Tachyon is a local build signed with a debug key.</li>
+    <li><b>Different launchers do different work.</b> Kvaesitso, Lawnchair and the Pixel Launcher draw wallpapers, icons, widgets and search providers. Tachyon draws text. Being lighter than a launcher that does ten times more is not the same as being better.</li>
+  </ul>
+
+  <h2>What's next</h2>
+  <p>The phone. Everything above is a workstation CPU behind a software GPU. The launcher now keeps a persistent log of its own start, HOME, keyboard and keystroke timings on the device, and the first real numbers will come from daily use. The renderer question in particular can only be settled there.</p>
+
+  <h2>What was measured</h2>
+  <table>
+    <thead><tr><th>Launcher</th><th>Version</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>Tachyon</td><td>0.1.0 (as Palma Launcher)</td><td>local build</td></tr>
+      <tr><td>Pixel Launcher</td><td>16</td><td>system image</td></tr>
+      <tr><td>Olauncher</td><td>6.10.27</td><td>F-Droid</td></tr>
+      <tr><td>KISS</td><td>3.26.0</td><td>F-Droid</td></tr>
+      <tr><td>Pie Launcher</td><td>1.28.0</td><td>F-Droid</td></tr>
+      <tr><td>Discreet Launcher</td><td>7.8.4</td><td>F-Droid</td></tr>
+      <tr><td>mLauncher</td><td>1.12.2</td><td>F-Droid</td></tr>
+      <tr><td>µLauncher</td><td>0.2.13</td><td>F-Droid</td></tr>
+      <tr><td>Last Launcher</td><td>1.5.0</td><td>F-Droid</td></tr>
+      <tr><td>MinimalSF</td><td>1.3.2</td><td>F-Droid</td></tr>
+      <tr><td>Kvaesitso</td><td>1.41.0</td><td>F-Droid</td></tr>
+      <tr><td>Fossify Launcher</td><td>1.10.0</td><td>F-Droid</td></tr>
+      <tr><td>Lawnchair</td><td>15 beta 3</td><td>GitHub release</td></tr>
+    </tbody>
+  </table>
+  <p class="mono" style="margin-top:28px">Sessions quoted: full-2, home-n200, renderer-starts, changes-1, goal-final, goal-final-kbd, home-tail-e0h. Charts are drawn from the session summaries.</p>
+  <p style="margin-top:40px"><a class="btn" href="index.html">Back to Tachyon</a></p>
+</article>
+</main>
+<script src="data.js"></script>
+<script src="screens.js"></script>
+<script src="site.js"></script>
+</body>
+</html>

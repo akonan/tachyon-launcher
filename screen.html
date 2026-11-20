@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tachyon screen</title><link rel="stylesheet" href="site.css">
+<style>html,body{margin:0;height:100%;background:#fff}.phone{position:fixed;inset:0;aspect-ratio:auto;border-radius:0;outline:0}</style></head>
+<body><!-- One screen, full window, for reference images: screen.html?s=home (home, search, calc, actions, commands, modes, dashboard, lock) -->
+<div class="phone" id="p"></div>
+<script src="screens.js"></script>
+<script>const s=new URLSearchParams(location.search).get('s')||'home';document.getElementById('p').innerHTML=(SCREENS[s]||SCREENS.home)();</script>
+</body></html>
