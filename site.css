@@ -304,6 +304,11 @@ html.still .player,html.still .cue{display:none}
 .art th,.art td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--div);vertical-align:top}
 .art th{font:500 .72rem var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--sec)}
 .art .call{border:2px solid var(--ink);border-radius:14px;padding:18px 20px;margin-top:24px}
+.art pre{font:400 .84rem/1.55 var(--mono);border:1px solid var(--div);border-radius:10px;padding:14px 16px;margin-top:16px;overflow-x:auto;white-space:pre}
+.art pre code{font:inherit}
+.art h2[id],.art h3[id]{scroll-margin-top:84px}
+.art .toc{list-style:none;padding:0;margin-top:32px;columns:2;column-gap:32px;border-top:1px solid var(--div);border-bottom:1px solid var(--div);padding:14px 0}
+.art .toc li{margin:0 0 6px;break-inside:avoid}
 .verdicts{list-style:none;padding:0}
 .verdicts li{display:grid;grid-template-columns:5.5em 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--div)}
 .verdicts .st{font:500 .74rem var(--mono);letter-spacing:.07em;text-transform:uppercase;padding-top:.3em}

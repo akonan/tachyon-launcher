@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tachyon user guide</title>
+<meta name="description" content="How to install and use Tachyon, the text-only Android launcher: Home, search, keywords, commands, pins, themes, modes and the config file.">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<nav class="top" aria-label="Site">
+  <a class="wm" href="index.html">Tachyon</a>
+  <a class="mono hide-s" href="index.html#speed">Speed</a>
+  <a class="mono hide-s" href="index.html#roadmap">Roadmap</a>
+  <a class="mono hide-s" href="index.html#get">Get it</a>
+  <a class="mono" href="guide.html" aria-current="page">Guide</a>
+  <a class="mono" href="blog.html">Blog</a>
+  <button class="btn sm" id="invert" type="button" aria-pressed="false">Invert</button>
+</nav>
+
+<main id="main">
+<article class="art">
+  <p class="mono">User guide · research preview · 20 November 2026</p>
+  <h1>Using Tachyon</h1>
+  <p class="standfirst">Home is a clock and a few names. Everything else is one search bar. This page covers installing it, using it, and changing it through the config file.</p>
+  <p class="call">This is a research preview built for one person's phone. Home starts with the author's pinned apps and two of the swipes open the author's apps. <a href="#first">The first five minutes</a> shows how to make it yours.</p>
+
+  <ul class="toc mono">
+    <li><a href="#install">Install</a></li>
+    <li><a href="#first">The first five minutes</a></li>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#search">Search</a></li>
+    <li><a href="#keywords">Keywords</a></li>
+    <li><a href="#calc">Calculator</a></li>
+    <li><a href="#commands">Commands</a></li>
+    <li><a href="#actions">Actions and pins</a></li>
+    <li><a href="#theme">Theme</a></li>
+    <li><a href="#modes">Modes and dashboard</a></li>
+    <li><a href="#keys">Hardware keys</a></li>
+    <li><a href="#config">The config file</a></li>
+    <li><a href="#secrets">Webhooks and secrets</a></li>
+    <li><a href="#eink">E-ink and Boox</a></li>
+    <li><a href="#limits">Known limits</a></li>
+  </ul>
+
+  <h2 id="install">Install</h2>
+  <ol>
+    <li><b>Download</b> the <a href="download/tachyon-research-preview.apk" download>research preview APK</a> (399 KB) on the phone. It needs Android 15 or later.</li>
+    <li><b>Open the file.</b> Android asks you to allow your browser or file manager to install apps, and warns that the app is from an unknown source. It is debug-signed and in no store, so both warnings are expected.</li>
+    <li><b>Try it first.</b> Open "Tachyon" from your app list. Nothing changes on the phone until the next step.</li>
+    <li><b>Make it the home app.</b> Settings → Apps → Default apps → Home app → Tachyon. App shortcuts ("Firefox: New tab") appear in search only while Tachyon is the home app; Android allows only the home app to read them.</li>
+  </ol>
+  <p><b>To go back</b>, choose your old launcher in the same Home app setting. Uninstalling Tachyon also deletes its config and secrets.</p>
+  <p><b>On a Boox</b>, switch off "Freeze new apps" before installing, or Boox disables the app on arrival. Then exclude Tachyon from app freezing so it is not killed in the background.</p>
+
+  <h3>Optional permissions</h3>
+  <p>Tachyon works without any of these. Each one switches on a single feature.</p>
+  <table>
+    <thead><tr><th>Permission</th><th>Where</th><th>What it enables</th></tr></thead>
+    <tbody>
+      <tr><td>Accessibility service "Tachyon actions"</td><td>Settings → Accessibility</td><td>The Lock screen and Recent apps commands</td></tr>
+      <tr><td>Modify system settings</td><td>App info → Tachyon</td><td>The Front light command and mode brightness</td></tr>
+      <tr><td>Do Not Disturb access</td><td>Settings → Notifications</td><td>Modes that silence notifications</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="first">The first five minutes</h2>
+  <ol>
+    <li><b>Clear the author's pins.</b> Hold a name on Home and choose "Unpin from home". Pins for apps you do not have are drawn in grey.</li>
+    <li><b>Pin your own.</b> Swipe up, type an app's name, hold the row (or tap Actions) and choose "Pin to home".</li>
+    <li><b>Pick a theme.</b> Type <code>&gt; theme</code> and choose Light, Dark or System.</li>
+    <li><b>Fix the side swipes.</b> Swipe left and swipe right open two of the author's apps. Type <code>&gt; edit config</code> and change <code>gestures</code>; see <a href="#config">the config file</a>.</li>
+    <li><b>Drop "Ask agent".</b> When nothing matches a search, the first row offered sends your text to a web address you have not set up. Until you <a href="#secrets">set one up</a>, put web search first: in the config, set <code>"fallbacks": ["action:web-search"]</code> inside <code>search</code>.</li>
+  </ol>
+
+  <h2 id="home">Home</h2>
+  <figure>
+    <div class="shots">
+      <div class="device"><div class="phone" data-screen="home"></div></div>
+      <div class="device"><div class="phone" data-screen="search"></div></div>
+      <div class="device"><div class="phone" data-screen="actions"></div></div>
+    </div>
+    <figcaption>Home, search and the actions sheet, drawn from the design files with sample content.</figcaption>
+  </figure>
+  <p>Home shows the date, a large clock, a battery and Wi-Fi line, and your pins. There is no wallpaper, no icons and no status bar.</p>
+  <table>
+    <thead><tr><th>Do this</th><th>On Home</th><th>In search and lists</th></tr></thead>
+    <tbody>
+      <tr><td>Swipe up, or tap the bar</td><td>Open search with the keyboard</td><td>Drag on rows to page up and down</td></tr>
+      <tr><td>Swipe down</td><td>Notifications</td><td>Back to Home, when the list is at the top</td></tr>
+      <tr><td>Swipe left / right</td><td>Open an app (set in the config)</td><td></td></tr>
+      <tr><td>Tap a pin</td><td>Open it</td><td>Tap a row to run it</td></tr>
+      <tr><td>Hold a pin or a row</td><td>Actions for it</td><td>Actions for it</td></tr>
+      <tr><td>Hold empty space</td><td>Commands</td><td></td></tr>
+      <tr><td>Start typing (hardware keyboard)</td><td>Opens search with that text</td><td></td></tr>
+      <tr><td>Home button</td><td>Opens search; press again to close</td><td>Clears the search and returns Home</td></tr>
+      <tr><td>Back</td><td></td><td>Clears the search and returns Home</td></tr>
+    </tbody>
+  </table>
+  <p>From inside any app, pressing the home button twice is "search". Every gesture can be changed, and double tap and taps on the clock, date and battery line can be given actions too.</p>
+
+  <h2 id="search">Search</h2>
+  <p>One bar searches apps, app shortcuts, system settings, commands, modes and your own actions. The best match sits nearest the bar in an inverted row; Enter runs it.</p>
+  <ul>
+    <li><b>Ranking.</b> Exact match, then prefix, word start, acronym (<code>gm</code> finds Google Maps), substring, then fuzzy: your letters in order, with gaps. Ties go to what you use most and most recently.</li>
+    <li><b>Auto-launch.</b> When at least two letters match exactly one app, it opens at once. You do not press Enter. It never auto-runs a shortcut, command, setting or action.</li>
+    <li><b>It remembers your pick.</b> Whatever you open for a query comes first the next time you type exactly that query.</li>
+    <li><b>Typos.</b> When four or more letters match nothing, names one typing mistake away are offered. A near miss is never auto-launched.</li>
+    <li><b>Empty bar.</b> Shows your recent apps.</li>
+    <li><b>Nothing found.</b> Fallback rows appear ("Ask agent: …", "Web search: …") so any text plus Enter does something.</li>
+    <li><b>Dictation.</b> The bar is a normal text field to Android, so voice typing and TalkBack work in it.</li>
+  </ul>
+  <p>Query prefixes: <code>&gt;</code> lists commands, <code>=</code> forces the calculator, <code>mode</code> then Enter opens Modes, <code>dash</code> then Enter opens the Dashboard.</p>
+
+  <h2 id="keywords">Keywords</h2>
+  <p>A keyword takes the rest of the line as its argument. A preview row shows what will run before you press Enter.</p>
+  <table>
+    <thead><tr><th>Type</th><th>What happens</th></tr></thead>
+    <tbody>
+      <tr><td><code>g cats</code></td><td>Web search for "cats"</td></tr>
+      <tr><td><code>yt lofi</code></td><td>YouTube search</td></tr>
+      <tr><td><code>ob buy milk</code></td><td>New Obsidian note with that text</td></tr>
+      <tr><td><code>calc 2*(3+4)</code></td><td>Calculator</td></tr>
+      <tr><td><code>agent summarize my inbox</code></td><td>Sends the text to your own web address (<a href="#secrets">set it up first</a>)</td></tr>
+      <tr><td><code>clip</code></td><td>Web search for what is on the clipboard</td></tr>
+    </tbody>
+  </table>
+  <p>These are the bundled ones. You add your own in the config: any URL, app link, Android intent or web request with <code>{query}</code> in it.</p>
+
+  <h2 id="calc">Calculator</h2>
+  <p>Type an expression and the result appears as you type. Enter copies it.</p>
+  <ul>
+    <li>Operators: <code>+ - * / ^ % !</code> and parentheses.</li>
+    <li>Functions such as <code>sqrt</code>, <code>ln</code>, <code>round(x, n)</code> and <code>hypot</code>.</li>
+    <li>Constants: <code>pi</code>, <code>e</code>, <code>tau</code>, <code>phi</code>.</li>
+    <li>Start with <code>=</code> when the text could also be a search, as in <code>=sqrt(2)</code>.</li>
+  </ul>
+
+  <h2 id="commands">Commands</h2>
+  <p>Type <code>&gt;</code>, or hold empty space on Home. Commands also turn up in normal search by name.</p>
+  <table>
+    <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>Theme</td><td>Light, Dark or System</td></tr>
+      <tr><td>Wi-Fi, Bluetooth</td><td>Open the system panel for it</td></tr>
+      <tr><td>Timer</td><td>Pick a length, or type <code>timer 10</code> for ten minutes; starts in your clock app</td></tr>
+      <tr><td>Notifications, Quick settings</td><td>Pull down the shade</td></tr>
+      <tr><td>Lock screen, Recent apps</td><td>Need the accessibility service</td></tr>
+      <tr><td>Edit config, Reload config, Config errors</td><td>See <a href="#config">the config file</a></td></tr>
+      <tr><td>Reindex apps</td><td>Re-read the app list if something is missing</td></tr>
+      <tr><td>Clear search history</td><td>Forget usage counts and remembered picks</td></tr>
+      <tr><td>Key tester</td><td>Shows the code of any hardware key you press</td></tr>
+      <tr><td>Performance stats, Export perf log</td><td>The launcher's own timings on your phone</td></tr>
+      <tr><td>Full refresh, Refresh mode, Front light</td><td>E-ink devices; see <a href="#eink">E-ink and Boox</a></td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="actions">Actions and pins</h2>
+  <p>Hold any row or pin, tap the Actions button, or hold Enter for half a second. The sheet offers:</p>
+  <ul>
+    <li><b>Open</b>, and the app's own shortcuts (new tab, a chat, a channel).</li>
+    <li><b>Pin to home</b> or <b>Unpin from home</b>.</li>
+    <li><b>Hide from search</b> or show again.</li>
+    <li><b>App info</b> and <b>Uninstall</b>.</li>
+  </ul>
+  <h3>Pin an action inside an app</h3>
+  <p>Pins are not only apps. Search for a shortcut such as "Slack: #dailies", "Firefox: New tab" or a chat, open Actions on that row and choose "Pin to home". One tap on Home then goes straight there. Your own actions and commands can be pinned the same way.</p>
+  <p>Home draws as many pins as fit the screen. A pin beyond that is saved but not shown.</p>
+
+  <h2 id="theme">Theme</h2>
+  <p>Type <code>&gt; theme</code>. <b>Light</b> is black on white. <b>Dark</b> is white on true black. <b>System</b> follows the phone's dark theme setting. There are no other colours.</p>
+  <p>On a phone with a notch or a punch-hole camera, content starts below it. Nothing to set.</p>
+
+  <h2 id="modes">Modes and dashboard</h2>
+  <figure>
+    <div class="shots">
+      <div class="device"><div class="phone" data-screen="modes"></div></div>
+      <div class="device"><div class="phone" data-screen="dashboard"></div></div>
+      <div class="device"><div class="phone" data-screen="commands"></div></div>
+    </div>
+    <figcaption>Modes, the dashboard and the command list, drawn from the design files with sample content.</figcaption>
+  </figure>
+  <p><b>Modes</b> (<code>mode</code>, then Enter) swap Home for a purpose: a mode has its own pins and gestures, and applies the device settings Android lets an app change, such as notification silence and, on e-ink, refresh mode and front light. A setting it may not change (Wi-Fi, for one) is named once in the status line. The bundled modes are examples from the author's phone; write your own in the config.</p>
+  <p><b>Dashboard</b> (<code>dash</code>, then Enter) shows a countdown, three numbers and a line to remember. In this preview the content is whatever you type into the config; it does not fetch anything yet.</p>
+
+  <h2 id="keys">Hardware keys</h2>
+  <ul>
+    <li><b>Volume up and down</b> move the selection, in lists and through the pins on Home.</li>
+    <li><b>Enter</b>, D-pad centre or a device's smart key run the selection.</li>
+    <li><b>Hold</b> one of those for half a second to open Actions.</li>
+  </ul>
+  <p>Any key can be bound. Run <code>&gt; key tester</code>, press the key, and use the code it shows: <code>"code:131": "builtin:openDashboard"</code>.</p>
+
+  <h2 id="config">The config file</h2>
+  <p>Everything above is data in one JSON file. Type <code>&gt; edit config</code>: Tachyon writes a file with your current settings and opens it in a text editor app. Save, come back, and type <code>&gt; reload config</code>.</p>
+  <p>From a computer, the file is at <code>/sdcard/Android/data/dev.palma.launcher/files/config.json</code>:</p>
+<pre><code>adb pull /sdcard/Android/data/dev.palma.launcher/files/config.json
+adb push config.json /sdcard/Android/data/dev.palma.launcher/files/config.json</code></pre>
+  <ul>
+    <li><b>Your file overrides the built-in defaults section by section.</b> A top-level section you write (<code>home</code>, <code>gestures</code>, <code>actions</code>, …) replaces the built-in one whole. A section you leave out keeps its defaults.</li>
+    <li><b>A mistake cannot break the launcher.</b> A bad section falls back to the defaults, and a "Config: n errors" row under <code>&gt;</code> says what is wrong and where.</li>
+    <li><b>Pinning, hiding and the theme picker write to this same file,</b> so you can mix editing by hand and by tapping.</li>
+  </ul>
+
+  <h3>Home and pins</h3>
+<pre><code>"home": {
+  "theme": "system",
+  "clock24h": true,
+  "dateFormat": "EEE d MMMM",
+  "pins": [
+    { "label": "Firefox", "package": "org.mozilla.firefox" },
+    { "label": "Signal" },
+    { "label": "Daily note", "action": "obsidian://daily" },
+    { "label": "Ask agent", "action": "action:agent" }
+  ]
+}</code></pre>
+  <p>A pin with only a label finds the app by name. A pin with an <code>action</code> runs that action.</p>
+
+  <h3>Gestures and keys</h3>
+<pre><code>"gestures": {
+  "swipeLeft": "app:Firefox",
+  "swipeRight": "app:Signal",
+  "swipeUp": "builtin:openSearch",
+  "swipeDown": "builtin:expandNotifications",
+  "doubleTap": "builtin:lockScreen",
+  "longPress": "builtin:openCommands",
+  "tapClock": "app:Clock"
+},
+"keys": {
+  "volumeUp": "builtin:selectPrevious",
+  "volumeDown": "builtin:selectNext"
+}</code></pre>
+
+  <h3>Writing an action</h3>
+  <p>An action is a short string or an object. A list of actions runs in order.</p>
+  <table>
+    <thead><tr><th>Write</th><th>It does</th></tr></thead>
+    <tbody>
+      <tr><td><code>"app:Firefox"</code></td><td>Opens an app, by name or package</td></tr>
+      <tr><td><code>"url:https://…"</code>, or any <code>scheme://…</code></td><td>Opens a link, including app links such as <code>obsidian://</code></td></tr>
+      <tr><td><code>"builtin:openSearch"</code></td><td>Runs a built-in command</td></tr>
+      <tr><td><code>"mode:evening"</code></td><td>Switches mode</td></tr>
+      <tr><td><code>"action:web-search"</code></td><td>Runs one of your actions by id</td></tr>
+      <tr><td><code>"settings:display"</code></td><td>Opens a system settings page</td></tr>
+      <tr><td><code>"none"</code></td><td>Nothing; use it to switch a gesture off</td></tr>
+      <tr><td><code>{ "type": "intent", … }</code></td><td>Sends an Android intent</td></tr>
+      <tr><td><code>{ "type": "http", … }</code></td><td>Makes a web request</td></tr>
+    </tbody>
+  </table>
+  <p>Text in an action can use <code>{query}</code>, <code>{clipboard}</code>, <code>{date}</code> and <code>{secret:NAME}</code>. Add a filter after a colon: <code>{query:url}</code> for links, <code>{query:json}</code> inside JSON, and <code>:trim</code>, <code>:upper</code>, <code>:lower</code>.</p>
+
+  <h3>Your own keywords</h3>
+<pre><code>"actions": [
+  { "id": "web-search", "title": "Web search", "keyword": "g",
+    "action": "url:https://duckduckgo.com/?q={query:url}" },
+  { "id": "wiki", "title": "Wikipedia", "keyword": "w",
+    "action": "url:https://en.wikipedia.org/wiki/Special:Search?search={query:url}" },
+  { "id": "daily", "title": "Daily note", "aliases": ["today"],
+    "action": "obsidian://daily" },
+  { "id": "share", "title": "Share text", "keyword": "share",
+    "action": { "type": "intent", "action": "android.intent.action.SEND",
+                "mimeType": "text/plain",
+                "extras": { "android.intent.extra.TEXT": "{query}" } } }
+]</code></pre>
+  <p>A <code>keyword</code> takes an argument (<code>w tachyon</code>). <code>aliases</code> are extra names the action is found by. Because <code>actions</code> replaces the built-in list whole, keep the bundled ones you still want in your file; the file that <code>&gt; edit config</code> creates already contains them.</p>
+
+  <h3>Search behaviour</h3>
+<pre><code>"search": {
+  "autoLaunch": true,
+  "autoLaunchMinChars": 2,
+  "learn": true,
+  "maxResults": 8,
+  "recentCount": 6,
+  "fallbacks": ["action:web-search"]
+}</code></pre>
+  <p>If auto-launch opens apps you did not mean, raise <code>autoLaunchMinChars</code> to 3 or set <code>autoLaunch</code> to <code>false</code>.</p>
+
+  <h3>A mode</h3>
+<pre><code>"modes": [
+  { "id": "daily", "name": "Daily" },
+  { "id": "evening", "name": "Evening reading",
+    "settings": { "notifications": "silent" },
+    "pins": [ { "label": "KOReader" }, { "label": "Kindle" } ],
+    "gestures": { "swipeLeft": "app:KOReader" } }
+]</code></pre>
+
+  <h2 id="secrets">Webhooks and secrets</h2>
+  <p>An <code>http</code> action sends text to a web address of yours: a home automation hook, a notes inbox, an AI agent. Tokens and private addresses do not go in the config. Store them on the phone by typing in the search bar:</p>
+<pre><code>secret set agent_url https://example.com/v1/run
+secret set agent_token YOUR_TOKEN</code></pre>
+  <p>The bar is masked while you type a secret. <code>secret list</code> shows the names, never the values, and <code>secret rm NAME</code> deletes one. Secrets stay on the device, outside backups, and are never shown or logged. The config refers to them by name:</p>
+<pre><code>{ "id": "agent", "title": "Ask agent", "keyword": "agent",
+  "action": { "type": "http", "method": "POST",
+              "url": "{secret:agent_url}",
+              "headers": { "Authorization": "Bearer {secret:agent_token}" },
+              "contentType": "application/json",
+              "body": "{\"prompt\": \"{query:json}\"}",
+              "successMessage": "Sent", "timeoutMs": 15000 } }</code></pre>
+  <p>The bundled "Ask agent" action already reads <code>agent_url</code> and <code>agent_token</code>, so setting those two secrets is enough to make it work. Addresses must be <code>https://</code>; plain <code>http://</code> is allowed only to localhost and Tailscale names (<code>*.ts.net</code>). This is the only thing Tachyon uses the network for.</p>
+
+  <h2 id="eink">E-ink and Boox</h2>
+  <p>Tachyon never animates, on any screen. On Onyx Boox devices it detects the e-ink panel by itself. On another e-ink device, say so in the config:</p>
+<pre><code>"eink": { "panel": "eink", "coalesceMs": 0, "launchTapGuardMs": 500 }</code></pre>
+  <ul>
+    <li><code>panel</code>: <code>auto</code>, <code>eink</code> or <code>lcd</code>.</li>
+    <li><code>coalesceMs</code>: while you type fast, draw at most one frame per this many milliseconds. Try 150 to 250 on a slow panel.</li>
+    <li><code>launchTapGuardMs</code>: taps are ignored this long after an app is opened, so a second tap on a slow panel cannot land in the wrong place.</li>
+  </ul>
+  <p><b>Full refresh</b> clears ghosting. <b>Refresh mode</b> and <b>Front light</b> use Boox controls and have had little testing. A <b>lock-screen dashboard</b> for the Boox sleep screen exists but is off by default and experimental (<code>"lockscreen": { "enabled": true }</code>, then <code>&gt; update lock screen</code>; <code>&gt; restore boox screensaver</code> undoes it).</p>
+
+  <h2 id="limits">Known limits</h2>
+  <ul>
+    <li><b>Android 15 or later only.</b></li>
+    <li><b>The defaults are one person's.</b> Pins, side swipes, modes and the dashboard text all need replacing. A neutral first run is on the <a href="index.html#roadmap">roadmap</a>.</li>
+    <li><b>You will reinstall once.</b> The package name changes before the real release, and the config path with it. Keep a copy of your <code>config.json</code>.</li>
+    <li><b>No work-profile shortcuts as pins,</b> and settings rows and built-in commands cannot be pinned yet.</li>
+    <li><b>No widgets, icons, folders or wallpaper.</b> That is the design, not a gap.</li>
+    <li><b>Tested on two phones.</b> If something breaks on yours, that is useful to know.</li>
+  </ul>
+
+  <p style="margin-top:40px"><a class="btn solid" href="download/tachyon-research-preview.apk" download>Download the research preview · 399 KB</a> <a class="btn" href="index.html">Back to Tachyon</a></p>
+</article>
+</main>
+<script src="data.js"></script>
+<script src="screens.js"></script>
+<script src="site.js"></script>
+</body>
+</html>
